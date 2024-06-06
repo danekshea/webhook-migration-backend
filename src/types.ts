@@ -22,7 +22,7 @@ interface EnvironmentConfig {
   PORT: number;
   originCollectionAddress: string;
   destinationCollectionAddress: string;
-  originChain: string;
+  destinationChain: string;
   mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => string;
   enableWebhookVerification: boolean;
   allowedTopicArn: string;

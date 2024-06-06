@@ -18,7 +18,7 @@ const serverConfig: ServerConfig = {
     PORT: parseInt(process.env.SANDBOX_PORT!, 10),
     originCollectionAddress: process.env.SANDBOX_ORIGIN_COLLECTION_ADDRESS!,
     destinationCollectionAddress: process.env.SANDBOX_DESTINATION_COLLECTION_ADDRESS!,
-    originChain: "polygon",
+    destinationChain: "imtbl-zkevm-testnet",
     mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => `https://api.sandbox.immutable.com/v1/chains/${chainName}/collections/${collectionAddress}/nfts/mint-requests/${referenceId}`,
     enableWebhookVerification: true, // Should the server verify the webhook SNS messages?
     allowedTopicArn: "arn:aws:sns:us-east-2:783421985614:*", // Used for webhook SNS verification
@@ -41,7 +41,7 @@ const serverConfig: ServerConfig = {
     PORT: parseInt(process.env.MAINNET_PORT!, 10),
     originCollectionAddress: process.env.MAINNET_ORIGIN_COLLECTION_ADDRESS!,
     destinationCollectionAddress: process.env.MAINNET_DESTINATION_COLLECTION_ADDRESS!,
-    originChain: "imtbl-zkevm-mainnet",
+    destinationChain: "imtbl-zkevm-mainnet",
     mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => `https://api.immutable.com/v1/chains/${chainName}/collections/${collectionAddress}/nfts/mint-requests/${referenceId}`,
     enableWebhookVerification: true, // Should the server verify the webhook SNS messages?
     allowedTopicArn: "arn:aws:sns:us-east-2:362750628221:*", // Used for webhook SNS verification

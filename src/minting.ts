@@ -32,7 +32,7 @@ export const mintByMintingAPI = async (contractAddress: string, walletAddress: s
 
   try {
     const response = await client.createMintRequest({
-      chainName: serverConfig[environment].chainName,
+      chainName: serverConfig[environment].destinationChain,
       contractAddress,
       createMintRequestRequest: {
         assets: [asset],

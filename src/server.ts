@@ -4,7 +4,7 @@ const cors = require("@fastify/cors");
 import { FastifyReply, FastifyRequest } from "fastify";
 import serverConfig, { IMX_JWT_KEY_URL, environment } from "./config";
 import { mintByMintingAPI } from "./minting";
-import { verifyPassportToken, decodePassportToken, verifySNSSignature, returnActivePhase } from "./utils";
+import { verifyPassportToken, decodePassportToken, verifySNSSignature } from "./utils";
 import { addTokenMinted, checkAddressMinted, totalMintCountAcrossAllPhases, updateUUIDStatus } from "./database";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
@@ -61,12 +61,12 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
     // await addTokenMinted(walletAddress, uuid, "pending", prisma);
 
     // If all operations are successful, construct the response object
-    const result = { collectionAddress: serverConfig[environment].collectionAddress, walletAddress, uuid };
+    const result = { collectionAddress: serverConfig[environment].destinationCollectionAddress, walletAddress, uuid };
 
     // Send the successful result back to the client
     reply.send(result);
 
-    mintByMintingAPI(serverConfig[environment].collectionAddress, walletAddress, uuid, metadata)
+    mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, uuid, metadata)
       .then(() => {
         logger.info("Minting API call successful.");
       })

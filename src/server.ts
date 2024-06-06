@@ -15,6 +15,7 @@ import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
 import { Prisma } from "@prisma/client";
 import { error } from "console";
+import Moralis from "moralis";
 
 // Initialize Prisma Client for database interactions
 const prisma = new PrismaClient();
@@ -30,8 +31,14 @@ fastify.register(cors, {
 });
 
 fastify.post("/event-webhook", async (request: any, reply: any) => {
-  return reply.send({ status: "ok" });
-  // const webhookSecret = request.headers["goldsky-webhook-secret"];
+  const { headers, body } = request;
+
+  const result = Moralis.Streams.verifySignature({
+    body,
+    signature: headers["x-signature"],
+  });
+
+  console.log(result);
 
   // if (webhookSecret !== serverConfig[environment].WEBHOOK_SECRET) {
   //   return reply.status(403).send({ error: "Invalid webhook secret" });

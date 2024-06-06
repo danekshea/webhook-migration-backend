@@ -30,66 +30,67 @@ fastify.register(cors, {
 });
 
 fastify.post("/event-webhook", async (request: any, reply: any) => {
-  const webhookSecret = request.headers["goldsky-webhook-secret"];
+  return reply.send({ status: "ok" });
+  // const webhookSecret = request.headers["goldsky-webhook-secret"];
 
-  if (webhookSecret !== serverConfig[environment].WEBHOOK_SECRET) {
-    return reply.status(403).send({ error: "Invalid webhook secret" });
-  }
+  // if (webhookSecret !== serverConfig[environment].WEBHOOK_SECRET) {
+  //   return reply.status(403).send({ error: "Invalid webhook secret" });
+  // }
 
-  const {
-    op,
-    data_source,
-    data: { old, new: newData },
-    webhook_name,
-    webhook_id,
-    id,
-    delivery_info: { max_retries, current_retry },
-    entity,
-  } = request.body;
+  // const {
+  //   op,
+  //   data_source,
+  //   data: { old, new: newData },
+  //   webhook_name,
+  //   webhook_id,
+  //   id,
+  //   delivery_info: { max_retries, current_retry },
+  //   entity,
+  // } = request.body;
 
-  const walletAddress = newData.to;
+  // const walletAddress = newData.to;
 
-  // Additional processing if needed
-  console.log(newData); // Example: Logging the "new" data
-  console.log(`Wallet address: ${walletAddress}`); // Example: Logging the wallet address
+  // // Additional processing if needed
+  // console.log(newData); // Example: Logging the "new" data
+  // console.log(`Wallet address: ${walletAddress}`); // Example: Logging the wallet address
 
-  // Conduct transactional operations related to minting
-  const uuid = uuidv4();
-  logger.info(`Attempting to mint NFT wallet address ${walletAddress} with UUID ${uuid}`);
-  try {
-    // // Record the minting operation in the database
-    // await addTokenMinted(walletAddress, uuid, "pending", prisma);
+  // // Conduct transactional operations related to minting
+  // const uuid = uuidv4();
+  // logger.info(`Attempting to mint NFT wallet address ${walletAddress} with UUID ${uuid}`);
+  // try {
+  //   // // Record the minting operation in the database
+  //   // await addTokenMinted(walletAddress, uuid, "pending", prisma);
 
-    // If all operations are successful, construct the response object
-    const result = { collectionAddress: serverConfig[environment].destinationCollectionAddress, walletAddress, uuid };
+  //   // If all operations are successful, construct the response object
+  //   const result = { collectionAddress: serverConfig[environment].destinationCollectionAddress, walletAddress, uuid };
 
-    // Send the successful result back to the client
-    reply.send(result);
+  //   // Send the successful result back to the client
+  //   reply.send(result);
 
-    mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, uuid, metadata)
-      .then(() => {
-        logger.info("Minting API call successful.");
-      })
-      .catch((apiError) => {
-        logger.error(`Minting API call failed for ${walletAddress} and ${uuid}: ${apiError}`);
-      });
-  } catch (error) {
-    // Determine the error type and respond accordingly
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      // Handle unique constraint violation
-      logger.error(`Unique constraint failed for address: ${error}`);
-      reply.status(401).send({ error: "Unauthorized: Duplicate entry for address" });
-    } else {
-      // Log the error that caused the transaction to fail
-      logger.error(`Error during minting process: ${error}`);
+  //   mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, uuid, metadata)
+  //     .then(() => {
+  //       logger.info("Minting API call successful.");
+  //     })
+  //     .catch((apiError) => {
+  //       logger.error(`Minting API call failed for ${walletAddress} and ${uuid}: ${apiError}`);
+  //     });
+  // } catch (error) {
+  //   // Determine the error type and respond accordingly
+  //   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+  //     // Handle unique constraint violation
+  //     logger.error(`Unique constraint failed for address: ${error}`);
+  //     reply.status(401).send({ error: "Unauthorized: Duplicate entry for address" });
+  //   } else {
+  //     // Log the error that caused the transaction to fail
+  //     logger.error(`Error during minting process: ${error}`);
 
-      // Send a general error response to the client
-      reply.status(500).send({ error: `Failed to process mint request: ${error}` });
-    }
-  }
+  //     // Send a general error response to the client
+  //     reply.status(500).send({ error: `Failed to process mint request: ${error}` });
+  //   }
+  // }
 
-  // Log the received webhook
-  fastify.log.debug(`Received webhook: ${JSON.stringify(request.body, null, 2)}`);
+  // // Log the received webhook
+  // fastify.log.debug(`Received webhook: ${JSON.stringify(request.body, null, 2)}`);
 });
 
 fastify.post("/imx-webhook", async (request: any, reply: any) => {

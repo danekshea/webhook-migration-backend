@@ -20,6 +20,11 @@ import Moralis from "moralis";
 // Initialize Prisma Client for database interactions
 const prisma = new PrismaClient();
 
+//start Moralis
+Moralis.start({
+  apiKey: process.env.MORALIS_API_KEY,
+});
+
 // Define the metadata for the NFT
 const metadata = serverConfig[environment].metadata;
 
@@ -32,10 +37,6 @@ fastify.register(cors, {
 
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
-
-  await Moralis.start({
-    apiKey: process.env.MORALIS_API_KEY,
-  });
 
   const result = Moralis.Streams.verifySignature({
     body,

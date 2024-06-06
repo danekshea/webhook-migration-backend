@@ -20,6 +20,7 @@ interface EnvironmentConfig {
   RPS_API_KEY: string;
   HOST_IP: string;
   PORT: number;
+  burnAddress: string;
   originCollectionAddress: string;
   destinationCollectionAddress: string;
   destinationChain: string;

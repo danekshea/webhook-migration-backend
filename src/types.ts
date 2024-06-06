@@ -20,16 +20,14 @@ interface EnvironmentConfig {
   RPS_API_KEY: string;
   HOST_IP: string;
   PORT: number;
-  collectionAddress: string;
-  chainName: string;
+  originCollectionAddress: string;
+  destinationCollectionAddress: string;
+  originChain: string;
   mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => string;
   enableWebhookVerification: boolean;
   allowedTopicArn: string;
-  maxTokenSupplyAcrossAllPhases: number; // Optional for generalization
   enableFileLogging: boolean;
   logLevel: string;
-  eoaMintMessage: string;
-  mintPhases: MintPhase[];
   metadata: NFTMetadata;
 }
 

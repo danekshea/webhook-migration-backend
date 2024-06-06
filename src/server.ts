@@ -43,7 +43,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
     signature: headers["x-signature"],
   });
 
-  console.log(result);
+  console.log(body);
 
   // if (webhookSecret !== serverConfig[environment].WEBHOOK_SECRET) {
   //   return reply.status(403).send({ error: "Invalid webhook secret" });

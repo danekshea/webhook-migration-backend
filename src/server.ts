@@ -33,6 +33,10 @@ fastify.register(cors, {
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
 
+  await Moralis.start({
+    apiKey: process.env.MORALIS_API_KEY,
+  });
+
   const result = Moralis.Streams.verifySignature({
     body,
     signature: headers["x-signature"],

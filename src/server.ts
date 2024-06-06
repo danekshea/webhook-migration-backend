@@ -43,7 +43,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
     signature: headers["x-signature"],
   });
 
-  console.log(body);
+  console.log(body[0].nftTransfers);
 
   // if (webhookSecret !== serverConfig[environment].WEBHOOK_SECRET) {
   //   return reply.status(403).send({ error: "Invalid webhook secret" });

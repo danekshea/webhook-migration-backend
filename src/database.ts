@@ -1,14 +1,39 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import logger from "./logger";
 
-export async function addTokenMinted(address: string, uuid: string, status: string, prisma: PrismaClient): Promise<void> {
+export async function addTokenMinted(
+  burned: boolean,
+  minted: boolean,
+  burnEVMTransactionHash: string,
+  mintEVMTransactionHash: string | null,
+  mintUUID: string,
+  originTokenId: number,
+  destinationTokenId: number,
+  fromOriginWalletAddress: string,
+  toOriginWalletAddress: string | null,
+  toDestinationWalletAddress: string,
+  status: string,
+  prisma: PrismaClient
+): Promise<void> {
   try {
-    await prisma.mints.create({
-      data: { address, uuid, status },
+    await prisma.token.create({
+      data: {
+        burned,
+        minted,
+        burnEVMTransactionHash,
+        mintEVMTransactionHash,
+        mintUUID,
+        originTokenId,
+        destinationTokenId,
+        fromOriginWalletAddress,
+        toOriginWalletAddress,
+        toDestinationWalletAddress,
+        status,
+      },
     });
-    logger.info(`Added minted token with ${uuid} for address ${address}.`);
+    logger.info(`Added minted token with UUID ${mintUUID} for destination address ${toDestinationWalletAddress}.`);
   } catch (error) {
-    logger.error(`Error adding minted token with ${uuid} for address ${address}: ${error}`);
+    logger.error(`Error adding minted token with UUID ${mintUUID} for destination address ${toDestinationWalletAddress}: ${error}`);
     throw error;
   }
 }

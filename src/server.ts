@@ -38,18 +38,18 @@ fastify.register(cors, {
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
 
-  // await Moralis.Streams.verifySignature({
-  //   body,
-  //   signature: headers["x-signature"],
-  // });
+  await Moralis.Streams.verifySignature({
+    body,
+    signature: headers["x-signature"],
+  });
 
   const transfers = body.nftTransfers;
 
   for (const transfer of transfers) {
-    const { from, to: walletAddress, tokenId, transactionHash, contract } = transfer;
+    const { from: walletAddress, to, tokenId, transactionHash, contract } = transfer;
 
-    if (walletAddress !== serverConfig[environment].burnAddress) {
-      logger.info(`Received NFT transfer to ${walletAddress} from ${from} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
+    if (to !== serverConfig[environment].burnAddress) {
+      logger.info(`Received NFT transfer to ${walletAddress} from ${walletAddress} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
       return;
     }
 
@@ -58,7 +58,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
     logger.info(`Attempting to mint NFT wallet address ${walletAddress} with UUID ${uuid}`);
     try {
       // // Record the minting operation in the database
-      await addTokenMinted(walletAddress, uuid, "pending", prisma);
+      await addTokenMinted(true, false, transactionHash, null, uuid, parseInt(tokenId), parseInt(tokenId), walletAddress, to, walletAddress, "pending", prisma);
 
       mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, uuid, metadata)
         .then(() => {

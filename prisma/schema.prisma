@@ -9,8 +9,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Mints {
-  address  String  @id
-  uuid    String
-  status  String
+model Token {
+  burned Boolean
+  minted Boolean
+  burnEVMTransactionHash String
+  mintEVMTransactionHash String?
+  mintUUID String
+  originTokenId Int  @unique
+  destinationTokenId Int @unique
+  fromOriginWalletAddress String
+  toOriginWalletAddress String?
+  toDestinationWalletAddress String
+  status String
 }

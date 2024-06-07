@@ -9,7 +9,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Token {
+model Tokens {
   burned Boolean
   minted Boolean
   burnEVMTransactionHash String

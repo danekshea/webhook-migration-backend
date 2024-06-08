@@ -38,22 +38,6 @@ export async function addTokenMinted(
   }
 }
 
-export async function checkAddressMinted(address: string = "0x42c2d104C05A9889d79Cdcd82F69D389ea24Db9a", prisma: PrismaClient): Promise<string | null> {
-  try {
-    logger.info(`Checking if user has minted: ${address}`);
-    const mintedAddress = await prisma.tokens.findUnique({
-      where: {
-        address: address,
-      },
-    });
-    logger.info(`User has minted: ${mintedAddress !== null}`);
-    return mintedAddress?.uuid ?? null;
-  } catch (error) {
-    logger.error(`Error checking if user has minted: ${error}`);
-    throw error;
-  }
-}
-
 // export async function loadAddressesIntoAllowlist(addresses: string[], phase: number, prisma: PrismaClient) {
 //   try {
 //     for (let address of addresses) {
@@ -88,7 +72,7 @@ export async function updateUUIDStatus(uuid: string, status: string, prisma: Pri
   try {
     await prisma.tokens.updateMany({
       where: {
-        uuid: uuid,
+        mintUUID: uuid,
       },
       data: {
         status: status,

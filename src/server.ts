@@ -5,7 +5,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import serverConfig, { IMX_JWT_KEY_URL, environment } from "./config";
 import { mintByMintingAPI } from "./minting";
 import { verifyPassportToken, decodePassportToken, verifySNSSignature } from "./utils";
-import { addTokenMinted, checkAddressMinted, totalMintCountAcrossAllPhases, updateUUIDStatus } from "./database";
+import { addTokenMinted, updateUUIDStatus } from "./database";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import logger from "./logger";

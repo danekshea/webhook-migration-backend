@@ -16,7 +16,7 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
     });
     for (const mint of pendingMints) {
       try {
-        const uuid = mint.uuid;
+        const uuid = mint.mintUUID;
         const response = await axios.get(serverConfig[environment].mintRequestURL(serverConfig[environment].destinationChain, serverConfig[environment].destinationCollectionAddress, uuid), {
           headers: {
             "x-immutable-api-key": serverConfig[environment].HUB_API_KEY,
@@ -31,12 +31,12 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
             logger.info(`Mint with UUID ${uuid} failed. Retrying with ${newUUID}.`);
 
             const updates = await prisma.tokens.updateMany({
-              where: { uuid },
-              data: { status: "pending", uuid: newUUID },
+              where: { mintUUID: uuid },
+              data: { status: "pending", mintUUID: newUUID },
             });
 
             if (updates.count > 0) {
-              mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.address, newUUID, serverConfig[environment].metadata);
+              mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, newUUID, serverConfig[environment].metadata);
             }
           }
         } else {
@@ -44,16 +44,16 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
           const newUUID = uuidv4();
 
           const updates = await prisma.tokens.updateMany({
-            where: { uuid },
-            data: { status: "pending", uuid: newUUID },
+            where: { mintUUID: uuid },
+            data: { status: "pending", mintUUID: newUUID },
           });
 
           if (updates.count > 0) {
-            mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.address, newUUID, serverConfig[environment].metadata);
+            mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, newUUID, serverConfig[environment].metadata);
           }
         }
       } catch (error) {
-        logger.error(`Error processing mint with UUID ${mint.uuid}.`);
+        logger.error(`Error processing mint with UUID ${mint.mintUUID}.`);
         console.log(error);
       }
     }

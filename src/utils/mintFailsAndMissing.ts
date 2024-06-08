@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
   try {
-    const pendingMints = await prisma.mints.findMany({
+    const pendingMints = await prisma.tokens.findMany({
       where: {
         status: {
           not: "succeeded",
@@ -30,7 +30,7 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
 
             logger.info(`Mint with UUID ${uuid} failed. Retrying with ${newUUID}.`);
 
-            const updates = await prisma.mints.updateMany({
+            const updates = await prisma.tokens.updateMany({
               where: { uuid },
               data: { status: "pending", uuid: newUUID },
             });
@@ -43,7 +43,7 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
           logger.error(`No mint found with UUID ${uuid}.`);
           const newUUID = uuidv4();
 
-          const updates = await prisma.mints.updateMany({
+          const updates = await prisma.tokens.updateMany({
             where: { uuid },
             data: { status: "pending", uuid: newUUID },
           });

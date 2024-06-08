@@ -5,7 +5,7 @@ import serverConfig, { environment } from "../config";
 
 export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
   try {
-    const pendingMints = await prisma.mints.findMany({
+    const pendingMints = await prisma.tokens.findMany({
       where: {
         status: {
           not: "succeeded",
@@ -26,7 +26,7 @@ export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
           if (response.data.result[0].status === "succeeded") {
             await prisma.$transaction(async (prisma) => {
               // Update the status of minted tokens
-              await prisma.mints.updateMany({
+              await prisma.tokens.updateMany({
                 where: { uuid },
                 data: { status: "succeeded" },
               });
@@ -35,14 +35,14 @@ export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
               logger.info(`Mint with UUID ${uuid} succeeded. Updating status.`);
             });
           } else if (response.data.result[0].status === "failed") {
-            await prisma.mints.updateMany({
+            await prisma.tokens.updateMany({
               where: { uuid },
               data: { status: "failed" },
             });
             logger.info(`Mint with UUID ${uuid} failed. Updating status.`);
           }
         } else {
-          await prisma.mints.updateMany({
+          await prisma.tokens.updateMany({
             where: { uuid },
             data: { status: "500" },
           });

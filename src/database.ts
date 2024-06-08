@@ -86,7 +86,7 @@ export async function checkAddressMinted(address: string = "0x42c2d104C05A9889d7
 
 export async function updateUUIDStatus(uuid: string, status: string, prisma: PrismaClient): Promise<void> {
   try {
-    await prisma.mints.updateMany({
+    await prisma.tokens.updateMany({
       where: {
         uuid: uuid,
       },

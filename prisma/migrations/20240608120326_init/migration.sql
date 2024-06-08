@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Token" (
+CREATE TABLE "Tokens" (
     "burned" BOOLEAN NOT NULL,
     "minted" BOOLEAN NOT NULL,
     "burnEVMTransactionHash" TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE "Token" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Token_originTokenId_key" ON "Token"("originTokenId");
+CREATE UNIQUE INDEX "Tokens_originTokenId_key" ON "Tokens"("originTokenId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Token_destinationTokenId_key" ON "Token"("destinationTokenId");
+CREATE UNIQUE INDEX "Tokens_destinationTokenId_key" ON "Tokens"("destinationTokenId");

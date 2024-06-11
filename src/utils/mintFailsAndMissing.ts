@@ -36,7 +36,7 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
             });
 
             if (updates.count > 0) {
-              mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, newUUID, serverConfig[environment].metadata);
+              mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, mint.originTokenId.toString(), newUUID, serverConfig[environment].metadata);
             }
           }
         } else {
@@ -49,7 +49,7 @@ export async function mintFailsAndMissing(prisma: PrismaClient): Promise<void> {
           });
 
           if (updates.count > 0) {
-            mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, newUUID, serverConfig[environment].metadata);
+            mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, mint.fromOriginWalletAddress, mint.originTokenId.toString(), newUUID, serverConfig[environment].metadata);
           }
         }
       } catch (error) {

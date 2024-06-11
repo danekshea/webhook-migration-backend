@@ -60,7 +60,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
       // // Record the minting operation in the database
       await addTokenMinted(true, false, transactionHash, null, uuid, parseInt(tokenId), parseInt(tokenId), walletAddress, to, walletAddress, "pending", prisma);
 
-      mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, uuid, metadata)
+      mintByMintingAPI(serverConfig[environment].destinationCollectionAddress, walletAddress, tokenId, uuid, metadata)
         .then(() => {
           logger.info("Minting API call successful.");
         })

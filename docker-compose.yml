@@ -6,9 +6,6 @@ services:
     ports:
       - "3002:3000"
     volumes:
-      - prisma-db:/usr/src/app/prisma/
+      - ./prisma:/usr/src/app/prisma/
     environment:
       NODE_ENV: development
-
-volumes:
-  prisma-db:

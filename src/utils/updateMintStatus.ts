@@ -5,7 +5,7 @@ import serverConfig, { environment } from "../config";
 
 export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
   try {
-    const pendingMints = await prisma.mints.findMany({
+    const pendingMints = await prisma.tokens.findMany({
       where: {
         status: {
           not: "succeeded",
@@ -14,7 +14,7 @@ export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
     });
     for (const mint of pendingMints) {
       try {
-        const uuid = mint.uuid;
+        const uuid = mint.mintUUID;
         const response = await axios.get(serverConfig[environment].mintRequestURL(serverConfig[environment].destinationChain, serverConfig[environment].destinationCollectionAddress, uuid), {
           headers: {
             "x-immutable-api-key": serverConfig[environment].HUB_API_KEY,
@@ -26,8 +26,8 @@ export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
           if (response.data.result[0].status === "succeeded") {
             await prisma.$transaction(async (prisma) => {
               // Update the status of minted tokens
-              await prisma.mints.updateMany({
-                where: { uuid },
+              await prisma.tokens.updateMany({
+                where: { mintUUID: uuid },
                 data: { status: "succeeded" },
               });
 
@@ -35,21 +35,21 @@ export async function updateMintStatus(prisma: PrismaClient): Promise<void> {
               logger.info(`Mint with UUID ${uuid} succeeded. Updating status.`);
             });
           } else if (response.data.result[0].status === "failed") {
-            await prisma.mints.updateMany({
-              where: { uuid },
+            await prisma.tokens.updateMany({
+              where: { mintUUID: uuid },
               data: { status: "failed" },
             });
             logger.info(`Mint with UUID ${uuid} failed. Updating status.`);
           }
         } else {
-          await prisma.mints.updateMany({
-            where: { uuid },
+          await prisma.tokens.updateMany({
+            where: { mintUUID: uuid },
             data: { status: "500" },
           });
           logger.error(`No mint found with UUID ${uuid}.`);
         }
       } catch (error) {
-        logger.error(`Error processing mint with UUID ${mint.uuid}.`);
+        logger.error(`Error processing mint with UUID ${mint.mintUUID}.`);
         console.log(error);
       }
     }

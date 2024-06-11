@@ -70,9 +70,9 @@ export async function addTokenMinted(
 
 export async function updateUUIDStatus(uuid: string, status: string, prisma: PrismaClient): Promise<void> {
   try {
-    await prisma.mints.updateMany({
+    await prisma.tokens.updateMany({
       where: {
-        uuid: uuid,
+        mintUUID: uuid,
       },
       data: {
         status: status,

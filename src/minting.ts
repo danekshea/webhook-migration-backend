@@ -4,7 +4,7 @@ import { environment } from "./config";
 import logger from "./logger";
 import { NFTMetadata } from "./types";
 
-export const mintByMintingAPI = async (contractAddress: string, walletAddress: string, uuid: string, metadata: NFTMetadata | null): Promise<string> => {
+export const mintByMintingAPI = async (contractAddress: string, walletAddress: string, tokenId: string, uuid: string, metadata: NFTMetadata | null): Promise<string> => {
   const config: blockchainData.BlockchainDataModuleConfiguration = {
     baseConfig: new sdkConfig.ImmutableConfiguration({
       environment: environment,
@@ -23,7 +23,7 @@ export const mintByMintingAPI = async (contractAddress: string, walletAddress: s
   const asset: any = {
     owner_address: walletAddress,
     reference_id: uuid,
-    token_id: null,
+    token_id: tokenId,
   };
 
   if (metadata !== null) {

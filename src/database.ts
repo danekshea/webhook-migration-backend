@@ -16,7 +16,7 @@ export async function addTokenMinted(
   prisma: PrismaClient
 ): Promise<void> {
   try {
-    await prisma.token.create({
+    await prisma.tokens.create({
       data: {
         burned,
         minted,
@@ -34,32 +34,6 @@ export async function addTokenMinted(
     logger.info(`Added minted token with UUID ${mintUUID} for destination address ${toDestinationWalletAddress}.`);
   } catch (error) {
     logger.error(`Error adding minted token with UUID ${mintUUID} for destination address ${toDestinationWalletAddress}: ${error}`);
-    throw error;
-  }
-}
-
-export async function checkAddressMinted(address: string = "0x42c2d104C05A9889d79Cdcd82F69D389ea24Db9a", prisma: PrismaClient): Promise<string | null> {
-  try {
-    logger.info(`Checking if user has minted: ${address}`);
-    const mintedAddress = await prisma.mints.findUnique({
-      where: {
-        address: address,
-      },
-    });
-    logger.info(`User has minted: ${mintedAddress !== null}`);
-    return mintedAddress?.uuid ?? null;
-  } catch (error) {
-    logger.error(`Error checking if user has minted: ${error}`);
-    throw error;
-  }
-}
-
-export async function totalMintCountAcrossAllPhases(prisma: PrismaClient): Promise<number> {
-  try {
-    const mintCount = await prisma.mints.count();
-    return mintCount;
-  } catch (error) {
-    logger.error(`Error getting total mint count: ${error}`);
     throw error;
   }
 }

@@ -38,10 +38,10 @@ fastify.register(cors, {
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
 
-  // await Moralis.Streams.verifySignature({
-  //   body,
-  //   signature: headers["x-signature"],
-  // });
+  await Moralis.Streams.verifySignature({
+    body,
+    signature: headers["x-signature"],
+  });
 
   const transfers = body.nftTransfers;
 

@@ -7,5 +7,6 @@ services:
       - "3002:3000"
     volumes:
       - ./prisma:/usr/src/app/prisma/
+      - ./.env:/usr/src/app/.env
     environment:
       NODE_ENV: development

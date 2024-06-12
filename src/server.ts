@@ -55,7 +55,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
 
     // Conduct transactional operations related to minting
     const uuid = uuidv4();
-    logger.info(`Attempting to mint NFT wallet address ${walletAddress} with UUID ${uuid}`);
+    logger.info(`Attempting to mint NFT to wallet address ${walletAddress} with UUID ${uuid}`);
     try {
       let destinationWalletAddress: string = walletAddress;
 

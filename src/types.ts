@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { FastifyRequest } from "fastify";
 import { Signature } from "viem";
 
@@ -28,6 +27,7 @@ interface EnvironmentConfig {
   enableWebhookVerification: boolean;
   allowedTopicArn: string;
   enableFileLogging: boolean;
+  enableAddressMapping: boolean;
   logLevel: string;
   metadata: NFTMetadata;
 }

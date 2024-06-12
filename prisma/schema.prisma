@@ -22,3 +22,8 @@ model Tokens {
   toDestinationWalletAddress String
   status String
 }
+
+model AddressMappings {
+  originWalletAddress String @unique
+  destinationWalletAddress String @unique
+}

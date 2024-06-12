@@ -19,7 +19,6 @@ export async function addTokenMinted(
     await prisma.tokens.create({
       data: {
         burned,
-        minted,
         burnEVMTransactionHash,
         mintEVMTransactionHash,
         mintUUID,

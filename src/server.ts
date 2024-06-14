@@ -115,6 +115,21 @@ if (serverConfig[environment].enableAddressMapping) {
   });
 }
 
+fastify.get("/wallet-nfts/:address/token/:tokenAddress", async (request: FastifyRequest, reply: any) => {
+  try {
+    const response = await Moralis.EvmApi.nft.getWalletNFTs({
+      address: (request.params as any).address,
+      chain: serverConfig[environment].originChainId,
+      tokenAddresses: [(request.params as any).tokenAddress]
+    });
+
+    reply.send(response.result)
+  } catch (err: any) {
+    console.error(err);
+    reply.status(500).send({ error: err.message })
+  }
+})
+
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
 
@@ -180,6 +195,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
   }
   // Log the received webhook
   fastify.log.debug(`Received webhook: ${JSON.stringify(request.body, null, 2)}`);
+  reply.status(200).send({});
 });
 
 fastify.post("/imx-webhook", async (request: any, reply: any) => {

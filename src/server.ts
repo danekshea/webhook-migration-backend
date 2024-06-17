@@ -19,6 +19,7 @@ import Moralis from "moralis";
 
 // Initialize Prisma Client for database interactions
 const prisma = new PrismaClient();
+let jwk: string;
 
 //start Moralis
 Moralis.start({
@@ -34,6 +35,85 @@ fastify.register(cors, {
   methods: ["GET", "POST", "PUT", "DELETE"], // Supported HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed HTTP headers
 });
+
+if (serverConfig[environment].enableAddressMapping) {
+  fastify.post("/address-mapping", async (request: any, reply: any) => {
+    const { body } = request;
+
+    let { originWalletAddress, destinationWalletAddress, signature } = body;
+
+    originWalletAddress = originWalletAddress.toLowerCase();
+    let passportWalletAddress: string;
+
+    const authorizationHeader = request.headers["authorization"];
+
+    // Signature is present check
+    if (!signature) {
+      return reply.status(400).send({ error: "Signature is required" });
+    }
+
+    // Check if the authorization header is present
+    if (!authorizationHeader) {
+      logger.warn("Missing authorization header");
+      reply.status(401).send({ error: "Missing authorization header" });
+      return;
+    }
+
+    // Remove 'Bearer ' prefix and verify the ID token
+    const idToken = authorizationHeader.replace("Bearer ", "");
+    try {
+      await verifyPassportToken(idToken, jwk);
+      logger.debug("ID token verified successfully");
+      const decodedToken = await decodePassportToken(idToken);
+      passportWalletAddress = decodedToken.payload.passport.zkevm_eth_address.toLowerCase();
+    } catch (error) {
+      logger.error(`Error verifying ID token: ${error}`);
+      reply.status(401).send({ error: "Invalid ID token" });
+      return;
+    }
+
+    const message = `${serverConfig[environment].eoaAddressMappingMessage}${passportWalletAddress}`;
+
+    // Verify the recovered address with the message and signature
+    try {
+      const verified = await verifyMessage({ address: originWalletAddress, message, signature });
+      if (!verified) {
+        logger.warn(`Signature verification failed: ${error}`);
+        reply.status(401).send({ error: "Invalid signature." });
+        return;
+      }
+    } catch (error) {
+      logger.warn(`Signature verification failed: ${error}`);
+      reply.status(401).send({ error: "Invalid signature." });
+      return;
+    }
+
+    try {
+      await prisma.addressMappings.create({
+        data: {
+          originWalletAddress: body.originWalletAddress.toLowerCase(),
+          destinationWalletAddress: passportWalletAddress,
+        },
+      });
+
+      // Send a success response to the client
+      reply.status(200).send({ success: true, message: "Address mapping created successfully." });
+    } catch (error) {
+      // Determine the error type and respond accordingly
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+        // Handle unique constraint violation
+        logger.error(`Unique constraint failed for address: ${error}`);
+        reply.status(401).send({ error: "Unauthorized: Address has already been mapped." });
+      } else {
+        // Log the error that caused the transaction to fail
+        logger.error(`Error during mapping process: ${error}`);
+
+        // Send a general error response to the client
+        reply.status(500).send({ error: `Failed to map address: ${error}` });
+      }
+    }
+  });
+}
 
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
@@ -70,7 +150,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
           destinationWalletAddress = mapping.destinationWalletAddress;
         } else {
           logger.error(`No destination address found for ${walletAddress}`);
-          return;
+          continue;
         }
       }
       // // Record the minting operation in the database
@@ -169,6 +249,14 @@ fastify.post("/imx-webhook", async (request: any, reply: any) => {
 // Start the server
 const start = async () => {
   try {
+    try {
+      const response = await axios.get(IMX_JWT_KEY_URL);
+      const jwks = response.data;
+      jwk = jwks.keys[0];
+    } catch (error) {
+      logger.error(`Error fetching JWKs: ${error}`);
+      throw error;
+    }
     // if (!checkConfigValidity(serverConfig[environment])) {
     //   throw new Error("Invalid server configuration. Exiting.");
     // }

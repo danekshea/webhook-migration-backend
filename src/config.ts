@@ -25,6 +25,7 @@ const serverConfig: ServerConfig = {
     allowedTopicArn: "arn:aws:sns:us-east-2:783421985614:*", // Used for webhook SNS verification
     enableFileLogging: true, // Should logs be output to files or just console?
     enableAddressMapping: true,
+    eoaAddressMappingMessage: "I want to map my EOA address to my Passport address. Here is my Passport adddress: ",
     logLevel: "debug",
     metadata: {
       name: "Copy Pasta - Can the devs do something?",
@@ -50,6 +51,7 @@ const serverConfig: ServerConfig = {
     allowedTopicArn: "arn:aws:sns:us-east-2:362750628221:*", // Used for webhook SNS verification
     enableFileLogging: true, // Should logs be output to files or just console?
     enableAddressMapping: true,
+    eoaAddressMappingMessage: "I want to map my EOA address to my Passport address. Here is my Passport adddress: ",
     logLevel: "debug",
     metadata: {
       name: "Copy Pasta - Can the devs do something?",

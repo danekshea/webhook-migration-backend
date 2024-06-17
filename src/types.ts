@@ -28,6 +28,7 @@ interface EnvironmentConfig {
   allowedTopicArn: string;
   enableFileLogging: boolean;
   enableAddressMapping: boolean;
+  eoaAddressMappingMessage: string;
   logLevel: string;
   metadata: NFTMetadata;
 }

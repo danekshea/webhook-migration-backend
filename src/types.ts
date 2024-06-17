@@ -20,8 +20,10 @@ interface EnvironmentConfig {
   HOST_IP: string;
   PORT: number;
   burnAddress: string;
+  originChainId: string;
   originCollectionAddress: string;
   destinationCollectionAddress: string;
+  destinationChainId: string;
   destinationChain: string;
   mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => string;
   enableWebhookVerification: boolean;

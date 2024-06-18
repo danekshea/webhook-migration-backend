@@ -48,7 +48,7 @@ const serverConfig: ServerConfig = {
     originCollectionAddress: process.env.MAINNET_ORIGIN_COLLECTION_ADDRESS!,
     destinationChainId: process.env.MAINNET_DESTINATION_CHAIN!,
     destinationCollectionAddress: process.env.MAINNET_DESTINATION_COLLECTION_ADDRESS!,
-    burnAddress: "0x000000000000000000000000000000000000dead",
+    burnAddress: "0x0000000000000000000000000000000000000000",
     destinationChain: "imtbl-zkevm-mainnet",
     mintRequestURL: (chainName: string, collectionAddress: string, referenceId: string) => `https://api.immutable.com/v1/chains/${chainName}/collections/${collectionAddress}/nfts/mint-requests/${referenceId}`,
     enableWebhookVerification: true, // Should the server verify the webhook SNS messages?

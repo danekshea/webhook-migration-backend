@@ -37,6 +37,41 @@ fastify.register(cors, {
 });
 
 if (serverConfig[environment].enableAddressMapping) {
+  fastify.get("/address-mapping/:address", async (request: any, reply: any) => {
+    const authorizationHeader = request.headers["authorization"];
+
+    // Check if the authorization header is present
+    if (!authorizationHeader) {
+      logger.warn("Missing authorization header");
+      reply.status(401).send({ error: "Missing authorization header" });
+      return;
+    }
+
+    // Remove 'Bearer ' prefix and verify the ID token
+    const idToken = authorizationHeader.replace("Bearer ", "");
+    try {
+      await verifyPassportToken(idToken, jwk);
+      logger.debug("ID token verified successfully");
+    } catch (error) {
+      logger.error(`Error verifying ID token: ${error}`);
+      reply.status(401).send({ error: "Invalid ID token" });
+      return;
+    }
+
+    let address = request.params["address"]?.toLowerCase();
+    if (!address || address.length === 0) reply.staus(400).send({ error: "address paramater is required" })
+
+    const mappedAddress = await prisma.addressMappings.findUnique({
+      where: {
+        originWalletAddress: address
+      }
+    });
+
+    if (!mappedAddress) reply.status(404).send({ message: `Address mapping not found for ${address}` });
+
+    reply.status(200).send({ addressMapping: mappedAddress });
+  })
+
   fastify.post("/address-mapping", async (request: any, reply: any) => {
     const { body } = request;
 

@@ -141,10 +141,13 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
   const transfers = body.nftTransfers;
 
   for (const transfer of transfers) {
-    const { from: walletAddress, to, tokenId, transactionHash, contract } = transfer;
+    let { from: walletAddress, to, tokenId, transactionHash, contract } = transfer;
 
-    if (to !== serverConfig[environment].burnAddress) {
-      logger.info(`Received NFT transfer to ${to} from ${walletAddress} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
+    to = to.toLowerCase();
+
+    logger.info(`Received NFT transfer to ${to} from ${walletAddress} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
+    if (to !== serverConfig[environment].burnAddress.toLowerCase()) {
+      logger.info("NFT transfer not to burn address. Skipping...");
       continue;
     }
 

@@ -120,15 +120,15 @@ fastify.get("/wallet-nfts/:address/token/:tokenAddress", async (request: Fastify
     const response = await Moralis.EvmApi.nft.getWalletNFTs({
       address: (request.params as any).address,
       chain: serverConfig[environment].originChainId,
-      tokenAddresses: [(request.params as any).tokenAddress]
+      tokenAddresses: [(request.params as any).tokenAddress],
     });
 
-    reply.send(response.result)
+    reply.send(response.result);
   } catch (err: any) {
     console.error(err);
-    reply.status(500).send({ error: err.message })
+    reply.status(500).send({ error: err.message });
   }
-})
+});
 
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
@@ -144,8 +144,8 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
     const { from: walletAddress, to, tokenId, transactionHash, contract } = transfer;
 
     if (to !== serverConfig[environment].burnAddress) {
-      logger.info(`Received NFT transfer to ${walletAddress} from ${walletAddress} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
-      return;
+      logger.info(`Received NFT transfer to ${to} from ${walletAddress} with tokenId ${tokenId} and transactionHash ${transactionHash}`);
+      continue;
     }
 
     // Conduct transactional operations related to minting

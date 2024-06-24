@@ -59,18 +59,18 @@ if (serverConfig[environment].enableAddressMapping) {
     }
 
     let address = request.params["address"]?.toLowerCase();
-    if (!address || address.length === 0) reply.staus(400).send({ error: "address paramater is required" })
+    if (!address || address.length === 0) reply.staus(400).send({ error: "address paramater is required" });
 
     const mappedAddress = await prisma.addressMappings.findUnique({
       where: {
-        originWalletAddress: address
-      }
+        originWalletAddress: address,
+      },
     });
 
     if (!mappedAddress) reply.status(404).send({ message: `Address mapping not found for ${address}` });
 
     reply.status(200).send({ addressMapping: mappedAddress });
-  })
+  });
 
   fastify.post("/address-mapping", async (request: any, reply: any) => {
     const { body } = request;
@@ -165,6 +165,42 @@ fastify.get("/wallet-nfts/:address/token/:tokenAddress", async (request: Fastify
   }
 });
 
+fastify.get("/eoa-mapping/:address", async (request: FastifyRequest, reply: any) => {
+  try {
+    const result = await prisma.addressMappings.findUnique({
+      where: {
+        originWalletAddress: (request.params as any).address,
+      },
+    });
+    if (result) {
+      reply.send({ destinationWalletAddress: result.destinationWalletAddress });
+    } else {
+      reply.status(404).send({ error: "No mapping found" });
+    }
+  } catch (err: any) {
+    console.error(err);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+});
+
+fastify.get("/passport-mapping/:address", async (request: FastifyRequest, reply: any) => {
+  try {
+    const result = await prisma.addressMappings.findUnique({
+      where: {
+        destinationWalletAddress: (request.params as any).address,
+      },
+    });
+    if (result) {
+      reply.send({ originWalletAddress: result.originWalletAddress });
+    } else {
+      reply.status(404).send({ error: "No mapping found" });
+    }
+  } catch (err: any) {
+    console.error(err);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+});
+
 fastify.post("/event-webhook", async (request: any, reply: any) => {
   const { headers, body } = request;
 
@@ -176,7 +212,7 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
   const transfers = body.nftTransfers;
 
   for (const transfer of transfers) {
-    let { from: walletAddress, to, tokenId, transactionHash, contract } = transfer;
+    let { from: walletAddress, to, tokenId, transactionHash } = transfer;
 
     to = to.toLowerCase();
 
@@ -237,7 +273,6 @@ fastify.post("/event-webhook", async (request: any, reply: any) => {
 });
 
 fastify.post("/imx-webhook", async (request: any, reply: any) => {
-  console.log(request);
   const { Type, SubscribeURL, TopicArn, Message, MessageId, Timestamp, Signature, SigningCertURL } = request.body;
   logger.debug(`Received webhook: ${JSON.stringify(request.body, null, 2)}`);
 

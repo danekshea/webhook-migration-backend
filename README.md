@@ -1,6 +1,6 @@
-# Minting API Backend for conducting a free mint
+# Backend for migrating assets from Moralis based chains to Immutable zkEVM
 
-This project is a backend API for doing a free mint on IMX zkEVM.
+This project is a backend for catching webhook events from Moralis based chains and minting assets on Immutable's zkEVM. It uses the Immutable Minting API to ensure that minting is sponsored & transaction life cycle monitoring, nonce management etc. is abstracted. Frontend available here: <https://github.com/ZacharyCouchman/imx-examples-react>.
 
 ## Disclaimer
 
@@ -9,55 +9,55 @@ The sample code provided is for reference purposes only and is not officially su
 ## Features
 
 - Uses the Immutable Minting API to ensure that minting is sponsored & transaction life cycle monitoring, nonce management etc. is abstracted.
-- Accounts for race conditions by locking the DB during minting for a specific address.
-- Records all tokens minted in a DB, both during pending & succeeded states. If the server crashes or a large amount of mints are pending, it's counted in the max supply.
-- Ability to allowlist addresses for minting and designate a quantity. For example, an address has the right to mint 5 tokens.
-- Webhook support for minting events, no need for polling. Also allows for asynchronous updating from a pending to succeeded or failed state.
-- Authenticated requests that are verified from both Passport and from IMX for webhooks, both on subscription & notifications.
-- Rich logging using Winston for troubleshooting & debugging.
-- Define phases that the mint should occur in, with different max supplies, start times, end times, and whether the phase is allowlisted.
+- Catches webhook burn events from Moralis, this means that all [Moralis chains](https://moralis.io/chains/) are supported as source chains.
+- Supports address mapping where the address on the source chain is different from the address on the destination chain.
+- Updates the database with success/failure events from the Immutable APIs to keep track of the minting status.
+- Provides an endpoint for the frontend so the same Moralis API key can be used both on the frontend and the backend.
 
-## Setup Instructions
+## Setup Instructions with Docker(recommended)
 
-1. Install the dependencies:
+1. Clone the repository:
+   ```
+   git clone <repository_url>
+   cd <repository_directory>
+   ```
+2. Install the dependencies:
    ```
    npm i
    ```
-2. Copy the example environment file and fill it with your API key, and DB path(should be `file:./allowList.db`):
+3. Copy the example environment file and fill it with your configuration details, and DB path(should be `file:./tokens.db`):
    ```
    cp .env.example .env
    ```
-3. Make sure to configure `src/config.ts` with your collection address after deploying the contract on hub.immutable.com. Pay specific attention to the mintPhases parameter:
+4. Start the docker container in detached mode, this will start the Fastify server, the docker compose is structure such that the `.env` file and the `tokens.db` file are mounted into the container:
    ```
-   mintPhases: [
-     {
-       name: "Presale",
-       startTime: 1629913600,
-       endTime: 1629999999,
-       enableAllowList: true,
-     },
-     {
-       name: "Public Sale",
-       startTime: 1630000000,
-       endTime: 1719292800,
-       enableAllowList: false,
-     }],
+   docker compose up -d
    ```
-   Keep in mind that you can configure a single phase if you're not planning a phased approach but just a start/end time.
-4. Populate your metadata in `server.ts` by following [this](https://docs.immutable.com/docs/zkEVM/products/minting/metadata/format) format.
-5. Run the DB migrations:
+
+## Setup Instructions without Docker
+
+1. Clone the repository:
+   ```
+   git clone <repository_url>
+   cd <repository_directory>
+   ```
+2. Install the dependencies:
+   ```
+   npm i
+   ```
+3. Copy the example environment file and fill it with your configuration details, and DB path(should be `file:./tokens.db`):
+   ```
+   cp .env.example .env
+   ```
+4. Run the DB migrations, you can check your database with https://sqlitebrowser.org or by running `npx prisma studio`:
    ```
    npx prisma migrate dev
    ```
-6. Load your database, https://sqlitebrowser.org/ is great for this. You can also write a script that uses the Prisma client to load the database. Make sure you have your address allowlisted, and quantity is 1, isLocked is 0, hasMinted is 0.
-
-7. Run the development server:
-
+5. Run the development server:
    ```
    npm start
    ```
-
-8. Create your webhook at https://hub.immutable.com/, use localtunnel for testing webhooks locally:
+6. Create your webhook at https://hub.immutable.com/, use localtunnel for testing webhooks locally:
 
    ```
    npx localtunnel --port 3000
@@ -67,14 +67,10 @@ The sample code provided is for reference purposes only and is not officially su
 
 ## To-Do List
 
-- [ ] Consider switching to Pino instead of Winston for logging
-- [ ] Troubleshoot why all console.log are not showing up in the console with logger.info
-- [ ] Add color coding to success or failure in the logs
-- [ ] Generally type more things like the mint requests etc.
 - [ ] Add ERC1155 support once the minting API is ready
-- [ ] Add the ability to choose whether you want mintByQuantity or mintByID
 
 ## Tech Stack
 
+- Fastify
 - Prisma ORM
 - sqlite3

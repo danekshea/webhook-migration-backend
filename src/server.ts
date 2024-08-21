@@ -24,6 +24,7 @@ let jwk: string;
 //start Moralis
 Moralis.start({
   apiKey: process.env.MORALIS_API_KEY,
+  streamsSecret: process.env.MORALIS_STREAMS_SECRET
 });
 
 // Define the metadata for the NFT

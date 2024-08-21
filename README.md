@@ -1,6 +1,6 @@
 # Backend for migrating assets from Moralis based chains to Immutable zkEVM
 
-This project is a backend for catching webhook events from Moralis based chains and minting assets on Immutable's zkEVM. It uses the Immutable Minting API to ensure that minting is sponsored & transaction life cycle monitoring, nonce management etc. is abstracted. Frontend available here: <https://github.com/ZacharyCouchman/imx-examples-react>.
+This project is a backend for catching webhook events from Moralis based chains and minting assets on Immutable's zkEVM. It uses the Immutable Minting API to ensure that minting is sponsored & transaction life cycle monitoring, nonce management etc. is abstracted. Frontend available here: <https://github.com/ZacharyCouchman/imx-nft-migration-frontend>.
 
 ## Disclaimer
 
